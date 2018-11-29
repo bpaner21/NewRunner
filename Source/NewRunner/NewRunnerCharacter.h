@@ -11,13 +11,14 @@ class ANewRunnerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+	/** Spring arm that will offset the camera */
+	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* SpringArm;
 
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
+	/** Camera component that will be our viewpoint */
+	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* Camera;
+
 public:
 	ANewRunnerCharacter();
 
@@ -29,7 +30,27 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	/*UFUNCTION()
+	void OnStartJump();
+
+	UFUNCTION()
+	void OnStopJump();//*/
+
+	int direction;
+	bool canTurnRight;
+
 protected:
+
+	int jumpCounter = 0;
+	bool bDo = false;
+	void MyDoOnce();
+	void ResetMyDoOnce();
+
+	void ChangeDirection(float value);
+
+	virtual void Tick(float DeltaSeconds);
+
+	void updateFloorDirection(FVector& direction);
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
@@ -62,11 +83,5 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
-
-public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
 

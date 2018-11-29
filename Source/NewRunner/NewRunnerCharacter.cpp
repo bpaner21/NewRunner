@@ -8,6 +8,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "New_Floor_00.h"
+
+
 
 //////////////////////////////////////////////////////////////////////////
 // ANewRunnerCharacter
@@ -32,16 +35,30 @@ ANewRunnerCharacter::ANewRunnerCharacter()
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	GetCharacterMovement()->MaxWalkSpeed = 800.0F;
 
-	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 54.0f));
+	SpringArm->SetWorldRotation(FRotator(-20.0f, 0.0f, 0.0f));
+	//SpringArm->AttachTo(RootComponent);
+	SpringArm->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	SpringArm->TargetArmLength = 525.0f;
+	SpringArm->bEnableCameraLag = false;
+	SpringArm->bEnableCameraRotationLag = false;
+	SpringArm->bInheritPitch = true;
+	SpringArm->bInheritYaw = true;
+	SpringArm->bInheritRoll = true;
+
+	// Create the chase camera component 
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ChaseCamera"));
+	//Camera->AttachTo(SpringArm, USpringArmComponent::SocketName);
+	Camera->AttachToComponent(SpringArm, FAttachmentTransformRules::SnapToTargetNotIncludingScale, USpringArmComponent::SocketName);
+	Camera->SetRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
+	Camera->bUsePawnControlRotation = false;
+	Camera->FieldOfView = 90.f;
+
+	direction = 0;
+	canTurnRight = true;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -57,8 +74,8 @@ void ANewRunnerCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &ANewRunnerCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ANewRunnerCharacter::MoveRight);
+	//PlayerInputComponent->BindAxis("MoveForward", this, &ANewRunnerCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ANewRunnerCharacter::ChangeDirection);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -131,4 +148,32 @@ void ANewRunnerCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void ANewRunnerCharacter::ChangeDirection(float Value)
+{
+	if (Value != 0 && canTurnRight) {
+		canTurnRight = false;
+		direction += Value;
+		if (direction > 3)
+			direction = 0;
+		else if (direction < 0)
+			direction = 3;
+	}
+	else if (Value == 0)
+		canTurnRight = true;
+}
+
+void ANewRunnerCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (direction == 0)
+		MoveForward(1);
+	else if (direction == 2)
+		MoveForward(-1);
+	else if (direction == 1)
+		MoveRight(1);
+	else if (direction == 3)
+		MoveRight(-1);
 }
