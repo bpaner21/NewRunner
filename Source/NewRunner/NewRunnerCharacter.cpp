@@ -10,13 +10,18 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "New_Floor_00.h"
 
-
+FVector floorPosition;
+FVector floorDirection = FVector(1, 0, 0);
+int frameCount = 0;
 
 //////////////////////////////////////////////////////////////////////////
 // ANewRunnerCharacter
 
 ANewRunnerCharacter::ANewRunnerCharacter()
 {
+	floorDirection = FVector(1, 0, 0);
+	floorPosition = FVector(2000, 0, -200);
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -38,7 +43,7 @@ ANewRunnerCharacter::ANewRunnerCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 800.0F;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 54.0f));
+	SpringArm->SetRelativeLocation(FVector(-10.0f, 0.0f, 54.0f));
 	SpringArm->SetWorldRotation(FRotator(-20.0f, 0.0f, 0.0f));
 	//SpringArm->AttachTo(RootComponent);
 	SpringArm->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
@@ -176,4 +181,16 @@ void ANewRunnerCharacter::Tick(float DeltaSeconds)
 		MoveRight(1);
 	else if (direction == 3)
 		MoveRight(-1);
+
+	ANew_Floor_00 *myFloor;
+
+	UWorld* const World = GetWorld();
+	if (World && (frameCount++ > 15) && (ANew_Floor_00::FloorCount < 5)) {
+		frameCount = 0;
+		FVector SpawnLocation = floorPosition;// GetActorLocation() + FVector(0, newCount * 100, -5);
+		floorPosition += floorDirection * 400;
+		//updateFloorDirection(floorDirection);
+		const FRotator FloorRotation = FRotator(0, 0, 0);
+		myFloor = World->SpawnActor<ANew_Floor_00>(SpawnLocation, FloorRotation);
+	}
 }
