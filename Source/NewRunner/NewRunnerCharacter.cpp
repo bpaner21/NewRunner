@@ -19,6 +19,7 @@ int frameCount = 0;
 
 ANewRunnerCharacter::ANewRunnerCharacter()
 {
+	ANew_Floor_00::FloorCount = 0;
 	floorDirection = FVector(1, 0, 0);
 	floorPosition = FVector(2000, 0, -200);
 
