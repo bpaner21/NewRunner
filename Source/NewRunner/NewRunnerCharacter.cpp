@@ -9,6 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "New_Floor_00.h"
+#include "New_Item_01.h"
 
 FVector floorPosition;
 FVector floorDirection = FVector(1, 0, 0);
@@ -185,13 +186,17 @@ void ANewRunnerCharacter::Tick(float DeltaSeconds)
 
 	ANew_Floor_00 *myFloor;
 
+	//ANew_Item_01 *myItem;
+
 	UWorld* const World = GetWorld();
-	if (World && (frameCount++ > 15) && (ANew_Floor_00::FloorCount < 5)) {
+	if (World && (frameCount++ > 15) /*&& (ANew_Floor_00::FloorCount < 20)*/) {
 		frameCount = 0;
 		FVector SpawnLocation = floorPosition;// GetActorLocation() + FVector(0, newCount * 100, -5);
 		floorPosition += floorDirection * 400;
 		//updateFloorDirection(floorDirection);
 		const FRotator FloorRotation = FRotator(0, 0, 0);
 		myFloor = World->SpawnActor<ANew_Floor_00>(SpawnLocation, FloorRotation);
+
+		//myItem = World->SpawnActor<ANew_Item_01>(SpawnLocation + FVector(0, 0, 150), FloorRotation);
 	}
 }
