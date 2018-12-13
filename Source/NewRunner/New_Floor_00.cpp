@@ -12,7 +12,7 @@ int ANew_Floor_00::FloorCount = 0;
 // Sets default values
 ANew_Floor_00::ANew_Floor_00()
 {
-	//++FloorCount;
+	++FloorCount;
 	SphereRadius = 100.0f;
 	BoxExtent = { 20.0f, 20.0f, 20.0f };
 
@@ -61,7 +61,7 @@ void ANew_Floor_00::Tick(float DeltaTime)
 
 void ANew_Floor_00::OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor)
 {
-	/*if (FloorCount >= 0)
+	if (FloorCount > 0)
 	{
 		--FloorCount;
 	}
@@ -71,5 +71,6 @@ void ANew_Floor_00::OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor)
 	}//*/
 
 	//--FloorCount;
+	//UE_LOG(LogTemp, Log, TEXT("FloorCount: %d"), FloorCount);
 	SetLifeSpan(1.0f);
 }

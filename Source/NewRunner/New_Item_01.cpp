@@ -2,9 +2,11 @@
 
 #include "New_Item_01.h"
 #include "DrawDebugHelpers.h"
+#include "Runtime/Engine/Classes/Engine/Engine.h"
 
 // void OnOverlapBegin(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool BoolFromSweep, const FHitResult& SweepResult)
 
+int ANew_Item_01::Score = 0;
 
 // Sets default values
 ANew_Item_01::ANew_Item_01()
@@ -12,7 +14,7 @@ ANew_Item_01::ANew_Item_01()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	CollisionSphereRadius = 100.0f;
+	CollisionSphereRadius = 25.0f;
 
 	ItemCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Item Sphere Component"));
 	ItemCollisionSphere->InitSphereRadius(CollisionSphereRadius);
@@ -49,6 +51,10 @@ void ANew_Item_01::OnOverlapBegin(class UPrimitiveComponent* OverlappedComponent
 {
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComponent != nullptr))
 	{
-		SetLifeSpan(1.0f);
+		//SetLifeSpan(1.0f);
+		++Score;
+		UE_LOG(LogTemp, Log, TEXT("Score: %d"), Score);
+		GEngine->AddOnScreenDebugMessage(0, 10.0f, FColor::Blue, FString(TEXT("Score: " + FString::FromInt(Score))));
+		Destroy();
 	}
 }

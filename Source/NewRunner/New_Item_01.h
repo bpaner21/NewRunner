@@ -30,6 +30,8 @@ public:
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool BoolFromSweep, const FHitResult& SweepResult);
 
+	static int Score;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

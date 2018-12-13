@@ -21,6 +21,7 @@ int frameCount = 0;
 ANewRunnerCharacter::ANewRunnerCharacter()
 {
 	ANew_Floor_00::FloorCount = 0;
+	ANew_Item_01::Score = 0;
 	floorDirection = FVector(1, 0, 0);
 	floorPosition = FVector(2000, 0, -200);
 
@@ -186,7 +187,7 @@ void ANewRunnerCharacter::Tick(float DeltaSeconds)
 
 	ANew_Floor_00 *myFloor;
 
-	//ANew_Item_01 *myItem;
+	ANew_Item_01 *myItem;
 
 	UWorld* const World = GetWorld();
 	if (World && (frameCount++ > 15) /*&& (ANew_Floor_00::FloorCount < 20)*/) {
@@ -197,6 +198,6 @@ void ANewRunnerCharacter::Tick(float DeltaSeconds)
 		const FRotator FloorRotation = FRotator(0, 0, 0);
 		myFloor = World->SpawnActor<ANew_Floor_00>(SpawnLocation, FloorRotation);
 
-		//myItem = World->SpawnActor<ANew_Item_01>(SpawnLocation + FVector(0, 0, 150), FloorRotation);
+		myItem = World->SpawnActor<ANew_Item_01>(SpawnLocation + FVector(0, 0, 150), FloorRotation);
 	}
 }
